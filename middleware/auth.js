@@ -1,21 +1,19 @@
-import jwt from 'jsonwebtoken';
-export const verifytoken=async(req,resizeBy,next)=>{
-    try{
-        let token = req.header("authorization");
-        if(!token){
-            return resizeBy.status(403).send("acess denied");
-        }
-        if(token.startswith("bearer")){
-            token=token.slice(7,token.legth).trimleft();
-            
-        }
-        const verified =jwt.verify(token,process.env.jwt_secret);
+// middleware/auth.js
 
-        req.user=verified;
-        next();
-    } catch(err){
-        res.status(500).json({error:err.message});
+export const verifyToken = (req, res, next) => {
+    // Logic for verifying JWT or token from request headers
+    const token = req.header("Authorization");
 
-        
-        }
-}
+    if (!token) {
+        return res.status(403).json({ message: "Access Denied" });
+    }
+
+    try {
+        // Token verification logic (e.g., using JWT)
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = verified;
+        next(); // Proceed to the next middleware or route handler
+    } catch (error) {
+        res.status(400).json({ message: "Invalid Token" });
+    }
+};
